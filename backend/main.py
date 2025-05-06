@@ -1,38 +1,31 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from keras.models import load_model
-from keras.preprocessing import image
-import numpy as np
-from io import BytesIO
 from PIL import Image
+import numpy as np
+import io
 
 app = FastAPI()
 
-# CORS: permite que tu frontend en Azure pueda conectarse a este backend
+# Permitir CORS desde el frontend de Azure
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # ⚠️ Puedes restringir a tu dominio de Azure
+    allow_origins=["*"],  # Puedes poner el dominio exacto de Azure si quieres más seguridad
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Cargar el modelo una vez al iniciar el servidor
-model = load_model("model/Lie_Truth.keras")
-
-# Procesar imagen como lo hiciste en Colab
-def read_imagefile(file) -> Image.Image:
-    image = Image.open(BytesIO(file))
-    return image
+model = load_model("model/Lie_Truth.keras")  # Ruta relativa correcta
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
-    img = read_imagefile(await file.read())
-    img = img.resize((224, 224))  # Ajusta esto a lo que usaste para entrenar
-    img_array = image.img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0) / 255.0
+    contents = await file.read()
+    image = Image.open(io.BytesIO(contents)).resize((224, 224))  # Ajusta tamaño según tu modelo
+    img_array = np.array(image) / 255.0
+    img_array = np.expand_dims(img_array, axis=0)
 
-    prediction = model.predict(img_array)[0][0]  # Suponiendo salida binaria
-    result = "Verdad" if prediction < 0.5 else "Mentira"
+    prediction = model.predict(img_array)
+    label = "Mentira" if prediction[0][0] > 0.5 else "Verdad"
 
-    return {"resultado": result}
+    return {"prediction": label}
