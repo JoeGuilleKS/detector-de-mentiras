@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clasificador de Imágenes</title>
+</head>
+<body>
+    <h2>Sube tu imagen para clasificar</h2>
+    <form action="http://TU_BACKEND_URL/predict" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">Clasificar</button>
+    </form>
+</body>
+</html>
