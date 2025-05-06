@@ -16,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = load_model("model/Lie_Truth.keras")  # Ruta relativa correcta
+model = load_model("backend/model/Lie_Truth.keras")  # Ruta relativa correcta
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
