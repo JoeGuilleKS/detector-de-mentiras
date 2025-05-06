@@ -1,13 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Clasificador de Imágenes</title>
+  <meta charset="UTF-8">
+  <title>Detector de Mentiras</title>
 </head>
 <body>
-    <h2>Sube tu imagen para clasificar</h2>
-    <form action="https://ashy-cliff-0f12da31e.6.azurestaticapps.net" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" accept="image/*" required>
-        <button type="submit">Clasificar</button>
-    </form>
+  <h1>Detector de Mentiras</h1>
+  
+  <input type="file" id="imagen" accept="image/*" />
+  <button onclick="predecir()">Predecir</button>
+  
+  <p id="resultado"></p>
+
+  <script>
+    async function predecir() {
+      const input = document.getElementById("imagen");
+      if (!input.files.length) {
+        alert("Por favor, selecciona una imagen.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", input.files[0]);
+
+      const res = await fetch("https://detector-de-mentiras.onrender.com/predict", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+      document.getElementById("resultado").innerText = "Resultado: " + data.resultado;
+    }
+  </script>
 </body>
 </html>
