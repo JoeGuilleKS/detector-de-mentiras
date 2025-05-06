@@ -1,4 +1,7 @@
-Flask==2.2.5
-tensorflow==2.14.0
+fastapi
+uvicorn
+keras
+tensorflow
 pillow
-numpy
+python-multipart
+
